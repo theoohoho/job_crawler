@@ -6,10 +6,14 @@ As a crawler for engineer job
 Python 3.6
 
 # Set up
-1. Install requirement
+1. Set up PYTHONPATH
 
-        pip3 install -f requirements.txt
+        export PYTHONPATH=path/to/job_crawler
 
-2. Run script
+2. Install requirement
+
+        pip3 install -r requirements.txt
+
+3. Run script
 
         python3 main.py --keyword [insert keyword]
