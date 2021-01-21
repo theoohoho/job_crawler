@@ -1,22 +1,16 @@
 import requests
-from typing import Union, List
-
+from typing import List, Optional
+from bs4 import BeautifulSoup
+from schema.parsed_data import ParsedData
 
 class TargetSource:
     """ The data source url of target."""
-    YOURATTOR = 'https://www.yourator.co'
+    YOURATTOR = 'https://www.yourator.co/api/v2/jobs?term[]={keyword}'
+    ONE_ZERO_FOUR = 'https://www.104.com.tw/jobs/search/?&jobsource=2018indexpoc&keyword={keyword}'
 
 
 class BaseParsingInterface:
     """ Base parsing method interface."""
-    def run(self) -> None:
-        pass
-
-    def set_keyword(self, filter_keyword: str) -> None:
-        pass
-
-    def parse(self) -> str:
-        pass
 
     def _get_job_company(self, data) -> str:
         pass
@@ -24,7 +18,7 @@ class BaseParsingInterface:
     def _get_job_title(self, data) -> str:
         pass
 
-    def _get_job_country(self, data) -> str:
+    def _get_job_area(self, data) -> str:
         pass
 
     def _get_job_desc(self, data) -> str:
@@ -33,21 +27,51 @@ class BaseParsingInterface:
     def _get_job_link(self, data) -> str:
         pass
 
+    def _get_company_link(self, data) -> str:
+        pass
 
-class BaseCrawler(BaseParsingInterface):
-    def __init__(self, source: TargetSource = None, filter_keyword: str = None):
-        self.source = source
-        self.filter_keyword = filter_keyword
+    def _get_update_time(self, data) -> str:
+        pass    
+
+class BaseHTMLParsingInterface:
+    def parsed_soup(self, raw_data) -> List:
+        pass
+
+class BaseCrawler(BaseParsingInterface, BaseHTMLParsingInterface):
+    def __init__(self, source: TargetSource = None, **kwargs):
+        self.source: str = source
+        self.filter_keyword: Optional[str] = kwargs.get('filter_keyword')
 
     def __doc__():
         return """The Base crawler to support different data source."""
 
-    def request_target_source(self, source_url: str = None, params=None) -> str:
-        r = requests.get(source_url, params)
-        return r.text
+    def request_target_source(self) -> str:
+        source_url = self.source.format(keyword=self.filter_keyword)
+        res = requests.get(source_url)
+        return res.text
 
-    def run(self) -> None:
-        pass
+    def parse(self, raw_data) -> List[ParsedData]:
+        parsed_result = []            
+        for data in raw_data:
+            parsed_data = ParsedData(
+                job_title=self._get_job_title(data),
+                company=self._get_job_company(data),
+                job_url=self._get_job_link(data),
+                company_url=self._get_company_link(data),
+                job_area=self._get_job_area(data),
+                update_time=self._get_update_time(data)
+            )
+            parsed_result.append(parsed_data)
+        return parsed_result
+
+    def run(self, **kwargs) -> None:
+        self.filter_keyword = kwargs.get('filter_keyword')
+
+        raw_source = self.request_target_source()
+        raw_data = BeautifulSoup(raw_source, "html.parser")
+        job_list = self.parsed_soup(raw_data)
+        parsed_results = self.parse(job_list)
+        return parsed_results
 
     def set_keyword(self, filter_keyword: str) -> None:
         self.filter_keyword = filter_keyword
