@@ -7,5 +7,5 @@ class ParsedData(BaseModel):
     job_area: Optional[str]
     job_desc: Optional[str]
     job_url: str
-    company_url: str
+    company_url: Optional[str]
     update_time: Optional[str]
