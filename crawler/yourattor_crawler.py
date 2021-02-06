@@ -5,8 +5,7 @@ import requests
 import json
 from pydantic import BaseModel
 from typing import List
-from crawler.base_crawler import BaseCrawler, TargetSource
-from schema.parsed_data import ParsedData
+from crawler.base_crawler import BaseCrawler, TargetSource, crawler_exception_handler
 
 
 class YourattorCrawler(BaseCrawler):
@@ -28,11 +27,14 @@ class YourattorCrawler(BaseCrawler):
     def _get_job_link(self, data) -> str:
         return self.source + data['path']
 
+    @crawler_exception_handler
     def run(self, **kwargs) -> None:
         self.filter_keyword = kwargs.get('filter_keyword')
+
         target_raw_source = self.request_target_source()
         target_json_source = json.loads(target_raw_source)
         parsed_results = self.parse(target_json_source['jobs'])
+
         return parsed_results
 
 

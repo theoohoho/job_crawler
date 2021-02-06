@@ -8,6 +8,7 @@ from crawler.base_crawler import BaseCrawler, TargetSource
 from schema.parsed_data import ParsedData
 import bs4.element as bs4_element
 
+
 class OneZaroFourCrawler(BaseCrawler):
     name = '104'
 
@@ -34,6 +35,7 @@ class OneZaroFourCrawler(BaseCrawler):
 
     def parsed_soup(self, raw_data: bs4_element.Tag) -> List:
         return raw_data.find_all("article")
+
 
 if __name__ == '__main__':
     onezfour_crawler = OneZaroFourCrawler()
