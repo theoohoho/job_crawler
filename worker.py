@@ -45,7 +45,6 @@ def exception_handler(func):
 class Worker():
     def __init__(self) -> None:
         self.tasks: List[BaseCrawler] = []
-        self.result_data = []
 
     @exception_handler
     def add_crawler(self, crawler: BaseCrawler) -> None:
@@ -60,11 +59,11 @@ class Worker():
 
         print(f"Ready for scraping, current task: {self.tasks}")
 
-        crawler_raw_data = []
+        crawling_result = []
         for task in self.tasks:
-            res = task.run()
-            crawler_raw_data.extend(res)
-        return crawler_raw_data
+            result = task.run()
+            crawling_result.extend(result)
+        return crawling_result
 
     @save_database
     def run_crawler_in_db(self) -> List[JobEventSchema]:

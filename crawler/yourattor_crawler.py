@@ -1,19 +1,19 @@
 """
 The crawler of Yourattor
 """
-import requests
 import json
-from pydantic import BaseModel
 from typing import List
 from crawler.base_crawler import BaseCrawler, TargetSource, crawler_exception_handler
+from schema.job_event import JobEvent
 
 
 class YourattorCrawler(BaseCrawler):
     """ The crawler of Yourattor."""
     name = 'yourattor'
+    source_url: TargetSource = TargetSource.YOURATTOR
 
     def __init__(self, filter_keyword: str = None):
-        super().__init__(source=TargetSource.YOURATTOR, filter_keyword=filter_keyword)
+        super().__init__(filter_keyword=filter_keyword)
 
     def _get_job_company(self, data) -> str:
         return data['company']['brand']
@@ -25,17 +25,17 @@ class YourattorCrawler(BaseCrawler):
         return data['country_name']
 
     def _get_job_link(self, data) -> str:
-        return self.source + data['path']
+        return self.source_url + data['path']
 
     @crawler_exception_handler
-    def run(self, **kwargs) -> None:
+    def run(self, **kwargs) -> List[JobEvent]:
         self.filter_keyword = kwargs.get('filter_keyword')
 
-        target_raw_source = self.request_target_source()
-        target_json_source = json.loads(target_raw_source)
-        parsed_results = self.parse(target_json_source['jobs'])
+        source_data = self.fetch_target_source()
+        job_list = json.loads(source_data)['jobs']
+        job_events = self.parse_job(job_list)
 
-        return parsed_results
+        return job_events
 
 
 if __name__ == '__main__':

@@ -11,9 +11,10 @@ import bs4.element as bs4_element
 
 class OneZaroFourCrawler(BaseCrawler):
     name = '104'
+    source_url: TargetSource = TargetSource.ONE_ZERO_FOUR
 
     def __init__(self, filter_keyword: str = None):
-        super().__init__(source=TargetSource.ONE_ZERO_FOUR, filter_keyword=filter_keyword)
+        super().__init__(filter_keyword=filter_keyword)
 
     def _get_job_company(self, data: bs4_element.Tag) -> str:
         return data.get("data-cust-name")
@@ -33,8 +34,8 @@ class OneZaroFourCrawler(BaseCrawler):
         else:
             return data.find_all('li')[2].text
 
-    def parsed_soup(self, raw_data: bs4_element.Tag) -> List:
-        return raw_data.find_all("article")
+    def extract_job_list(self, soup: bs4_element.Tag) -> List:
+        return soup.find_all("article")
 
 
 if __name__ == '__main__':
