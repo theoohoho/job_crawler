@@ -7,9 +7,8 @@ from sqlalchemy.exc import InvalidRequestError
 
 from utils.exception import WorkerRunningError, WorkerSetupCrawlerFail
 
-from model.job_event import JobEvent
 from schema.job_event import JobEvent as JobEventSchema
-
+from crud.crud_job_event import job_event
 from crawler.base_crawler import BaseCrawler
 
 
@@ -17,12 +16,11 @@ def save_database(func):
     def wrapper(*args, **kwargs):
         from database.database_session import get_db_session
         try:
-            db_session = next(get_db_session())
-            raw_data = func(*args, **kwargs)
-            print('Ready to save scraping data into database')
-            data_in_db = [JobEvent(**data.dict()) for data in raw_data]
-            db_session.add_all(data_in_db)
-            db_session.commit()
+            with get_db_session() as db_session:
+                raw_data = func(*args, **kwargs)
+                print('Ready to save scraping data into database')
+                job_event.add_all(db_session, raw_data)
+                db_session.commit()
             print('Successed saving data into database')
         except InvalidRequestError:
             raise

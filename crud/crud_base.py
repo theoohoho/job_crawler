@@ -66,3 +66,8 @@ class CRUDBase(Generic[ModelType, DataSchemaType]):
         db.delete(db_obj)
         db.commit()
         return db_obj
+
+    @db_exception
+    def add_all(self, db: Session, objs_in: List[DataSchemaType]) -> None:
+        db_objs = [self.model(**obj.dict()) for obj in objs_in]
+        db.add_all(db_objs)
