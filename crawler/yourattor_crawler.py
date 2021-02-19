@@ -27,7 +27,10 @@ class YourattorCrawler(BaseCrawler):
         return data['country_name']
 
     def _get_job_link(self, data) -> str:
-        return self.source_url + data['path']
+        return f"https://www.yourator.co{data['path']}"
+
+    def _get_company_link(self, data) -> str:
+        return f"https://www.yourator.co{data['company']['path']}"
 
     @crawler_exception_handler
     def run(self) -> List[JobEvent]:

@@ -3,9 +3,9 @@
 As a crawler for engineer job
 
 # Env Requirement
-Python 3.6
+Python 3.7
 
-# Set up
+## Set up
 1. Set up PYTHONPATH
 
         export PYTHONPATH=path/to/job_crawler
@@ -14,6 +14,10 @@ Python 3.6
 
         pip3 install -r requirements.txt
 
-3. Run script
+3. Setup environment variable
 
-        python3 main.py --keyword [insert keyword]
+        source setup.sh
+
+## Run script
+
+        python main.py --keyword [insert keyword]
