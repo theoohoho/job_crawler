@@ -3,8 +3,9 @@ Defined the crawler to crawling target source: Yourattor
 """
 import json
 from typing import List
-from crawler.base_crawler import BaseCrawler, TargetSource, crawler_exception_handler
+from crawler.base_crawler import BaseCrawler, TargetSource
 from schema.job_event import JobEvent
+from utils.decorators import crawler_exception_handler
 
 
 class YourattorCrawler(BaseCrawler):
@@ -29,8 +30,7 @@ class YourattorCrawler(BaseCrawler):
         return self.source_url + data['path']
 
     @crawler_exception_handler
-    def run(self, **kwargs) -> List[JobEvent]:
-        self.filter_keyword = kwargs.get('filter_keyword')
+    def run(self) -> List[JobEvent]:
 
         source_data = self.fetch_target_source()
         job_list = json.loads(source_data)['jobs']

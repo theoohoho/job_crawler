@@ -1,27 +1,18 @@
 """Defined a base crawler module"""
 
 import requests
-
+from enum import Enum
 from typing import List, Optional
 from bs4 import BeautifulSoup, element as bs4_element
+
 from schema.job_event import JobEvent
+from utils.decorators import crawler_exception_handler
 
-from enum import Enum
 
-
-class TargetSource(Enum):
+class TargetSource(str, Enum):
     """ The data source url of target."""
     YOURATTOR = 'https://www.yourator.co/api/v2/jobs?term[]={keyword}'
     ONE_ZERO_FOUR = 'https://www.104.com.tw/jobs/search/?&jobsource=2018indexpoc&keyword={keyword}'
-
-
-def crawler_exception_handler(func):
-    def wrapper(self, *args, **kwargs):
-        print(f'Start running {self.name} crawler...')
-        result = func(self, *args, **kwargs)
-        print('Successed web scraping job, continue return result...')
-        return result
-    return wrapper
 
 
 class BaseParsingInterface:
@@ -106,13 +97,12 @@ class BaseCrawler(BaseParsingInterface, BaseHTMLParsingInterface):
         return parsed_result
 
     @crawler_exception_handler
-    def run(self, **kwargs) -> List[JobEvent]:
+    def run(self) -> List[JobEvent]:
         """Running crawler job to scraping target source
 
         Returns:
             List[JobEvent]: a list of job event
         """
-        self.filter_keyword = kwargs.get('filter_keyword')
 
         source_data = self.fetch_target_source()
         soup = BeautifulSoup(source_data, "html.parser")

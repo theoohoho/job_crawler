@@ -5,11 +5,12 @@ from typing import List
 
 from sqlalchemy.exc import InvalidRequestError
 
-from utils.exception import WorkerRunningError, WorkerSetupCrawlerFail
+from utils.exceptions import WorkerRunningError, WorkerSetupCrawlerFail
 
 from schema.job_event import JobEvent as JobEventSchema
 from crud.crud_job_event import job_event
 from crawler.base_crawler import BaseCrawler
+from utils.decorators import worker_exception_handler
 
 
 def save_database(func):
@@ -31,21 +32,6 @@ def save_database(func):
     return wrapper
 
 
-def exception_handler(func):
-    """A decorator to handle exception from worker
-    """
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except WorkerRunningError:
-            raise
-        except WorkerSetupCrawlerFail:
-            raise
-        except Exception:
-            raise
-    return wrapper
-
-
 class Worker():
     """Worker runner to setup multiple crawler job and batch running crawler job
     """
@@ -53,7 +39,7 @@ class Worker():
     def __init__(self) -> None:
         self.tasks: List[BaseCrawler] = []
 
-    @exception_handler
+    @worker_exception_handler
     def add_crawler(self, crawler: BaseCrawler) -> None:
         """Append crawler task into tasks list
 
@@ -62,7 +48,7 @@ class Worker():
         """
         self.tasks.append(crawler)
 
-    @exception_handler
+    @worker_exception_handler
     def setup_crawler(self, crawlers: List[BaseCrawler]) -> None:
         """Set up crawler task into worker
 
@@ -71,7 +57,7 @@ class Worker():
         """
         self.tasks.extend(crawlers)
 
-    @exception_handler
+    @worker_exception_handler
     def run_crawler(self) -> List[JobEventSchema]:
         """Extract crawler from job list and execute it each
 

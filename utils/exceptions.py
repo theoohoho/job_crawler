@@ -7,3 +7,11 @@ class WorkerRunningError(RuntimeError):
 
 class WorkerSetupCrawlerFail(TypeError):
     pass
+
+
+class CrawlerException(Exception):
+    pass
+
+
+class HTMLParseException(Exception):
+    pass
