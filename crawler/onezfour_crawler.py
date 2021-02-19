@@ -1,19 +1,18 @@
 """
-The crawler of 104
+Defined the crawler to crawling target source: 104
 """
-import re
-import requests
 from typing import List
 from crawler.base_crawler import BaseCrawler, TargetSource
-from schema.parsed_data import ParsedData
 import bs4.element as bs4_element
 
 
 class OneZaroFourCrawler(BaseCrawler):
+    """ The crawler module of 104."""
     name = '104'
     source_url: TargetSource = TargetSource.ONE_ZERO_FOUR
 
     def __init__(self, filter_keyword: str = None):
+        """Initial 104 crawler module"""
         super().__init__(filter_keyword=filter_keyword)
 
     def _get_job_company(self, data: bs4_element.Tag) -> str:

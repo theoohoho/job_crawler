@@ -1,5 +1,5 @@
 """
-The crawler of Yourattor
+Defined the crawler to crawling target source: Yourattor
 """
 import json
 from typing import List
@@ -8,11 +8,12 @@ from schema.job_event import JobEvent
 
 
 class YourattorCrawler(BaseCrawler):
-    """ The crawler of Yourattor."""
+    """ The crawler module of Yourattor."""
     name = 'yourattor'
     source_url: TargetSource = TargetSource.YOURATTOR
 
     def __init__(self, filter_keyword: str = None):
+        """Initial yourattor crawler module"""
         super().__init__(filter_keyword=filter_keyword)
 
     def _get_job_company(self, data) -> str:

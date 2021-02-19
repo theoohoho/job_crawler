@@ -13,6 +13,8 @@ from crawler.base_crawler import BaseCrawler
 
 
 def save_database(func):
+    """A decorator to support worker to save job data into database
+    """
     def wrapper(*args, **kwargs):
         from database.database_session import get_db_session
         try:
@@ -30,6 +32,8 @@ def save_database(func):
 
 
 def exception_handler(func):
+    """A decorator to handle exception from worker
+    """
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -43,20 +47,37 @@ def exception_handler(func):
 
 
 class Worker():
+    """Worker runner to setup multiple crawler job and batch running crawler job
+    """
+
     def __init__(self) -> None:
         self.tasks: List[BaseCrawler] = []
 
     @exception_handler
     def add_crawler(self, crawler: BaseCrawler) -> None:
+        """Append crawler task into tasks list
+
+        Args:
+            crawler (BaseCrawler): a crawler for worker to execute
+        """
         self.tasks.append(crawler)
 
     @exception_handler
     def setup_crawler(self, crawlers: List[BaseCrawler]) -> None:
+        """Set up crawler task into worker
+
+        Args:
+            crawlers (List[BaseCrawler]): multiple crawlers for worker to execute
+        """
         self.tasks.extend(crawlers)
 
     @exception_handler
     def run_crawler(self) -> List[JobEventSchema]:
+        """Extract crawler from job list and execute it each
 
+        Returns:
+            List[JobEventSchema]: the result of crawler output
+        """
         print(f"Ready for scraping, current task: {self.tasks}")
 
         crawling_result = []
@@ -67,4 +88,9 @@ class Worker():
 
     @save_database
     def run_crawler_in_db(self) -> List[JobEventSchema]:
+        """Extract crawler from job list and execute it each. then store output into database
+
+        Returns:
+            List[JobEventSchema]: the result of crawler output
+        """
         return self.run_crawler()

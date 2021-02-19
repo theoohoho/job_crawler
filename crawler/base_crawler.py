@@ -1,5 +1,4 @@
-"""Defined a base crawler module
-"""
+"""Defined a base crawler module"""
 
 import requests
 
@@ -52,23 +51,30 @@ class BaseParsingInterface:
 
 class BaseHTMLParsingInterface:
     def extract_job_list(self, soup: bs4_element.Tag) -> List:
+        """Extract job list from soap object
+
+        Args:
+            soup (bs4_element.Tag): a soap data that parsed by BeautifulSoap
+
+        Returns:
+            List: a job list that extract from soap object
+        """
         pass
 
 
 class BaseCrawler(BaseParsingInterface, BaseHTMLParsingInterface):
+    """The Base crawler to support different data source."""
     source_url: TargetSource = ''
 
     def __init__(self, **kwargs):
+        """Initial base crawler module."""
         self.filter_keyword: Optional[str] = kwargs.get('filter_keyword')
 
         print(
             f'Setup {self.name} crawler, the filter keyword is {self.filter_keyword}')
 
-    def __doc__():
-        return """The Base crawler to support different data source."""
-
     def fetch_target_source(self) -> str:
-
+        """Fetch source text from target source url"""
         print(f'Send requst to the target source of {self.name} crawler...')
 
         source_url = self.source_url.format(keyword=self.filter_keyword)
@@ -76,7 +82,14 @@ class BaseCrawler(BaseParsingInterface, BaseHTMLParsingInterface):
         return res.text
 
     def parse_job(self, job_list: List) -> List[JobEvent]:
+        """Parse job list and Package a list of data job event data format
 
+        Args:
+            job_list (List): a job list that 
+
+        Returns:
+            List[JobEvent]: [description]
+        """
         print('Parsing job data from job list...')
 
         parsed_result = []
@@ -94,6 +107,11 @@ class BaseCrawler(BaseParsingInterface, BaseHTMLParsingInterface):
 
     @crawler_exception_handler
     def run(self, **kwargs) -> List[JobEvent]:
+        """Running crawler job to scraping target source
+
+        Returns:
+            List[JobEvent]: a list of job event
+        """
         self.filter_keyword = kwargs.get('filter_keyword')
 
         source_data = self.fetch_target_source()

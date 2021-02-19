@@ -1,3 +1,5 @@
+"""Init database table schema.
+"""
 from model.base import Base
 from database.database_session import engine
 

@@ -8,7 +8,16 @@ from crawler import yourattor_crawler, onezfour_crawler
 from worker import Worker
 
 
-def worker_runner(args, keyword: str) -> Worker:
+def worker_runner(args: argparse.Namespace, keyword: str) -> Worker:
+    """Setup worker runner
+
+    Args:
+        args (argparse.Namespace): a object contain arguments of command
+        keyword (str): a keyword let crawler to filter result
+
+    Returns:
+        Worker: Worker class
+    """
     try:
         setup_crawler = []
         worker = Worker()
@@ -27,7 +36,12 @@ def worker_runner(args, keyword: str) -> Worker:
         raise
 
 
-def worker(args) -> None:
+def main(args: argparse.Namespace) -> None:
+    """Setup and execute worker_runner
+
+    Args:
+        args (argparse.Namespace): a object contain arguments of command
+    """
     try:
         keyword = ''.join(args.keyword)
         worker = worker_runner(args, keyword)
@@ -57,4 +71,4 @@ if __name__ == '__main__':
     parser.add_argument('--enable_db', help='enable save in database', action='store_true')
 
     args = parser.parse_args()
-    worker(args)
+    main(args)

@@ -1,3 +1,5 @@
+"""The config settings of Job crawler
+"""
 from pydantic import BaseSettings, PostgresDsn, validator
 from typing import Optional, Dict, Any
 
